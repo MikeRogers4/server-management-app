@@ -1,0 +1,22 @@
+{
+  "name": "Workspace",
+  "dockerComposeFile": "docker-compose.devcontainer.yml",
+  "service": "vscode",
+  "shutdownAction": "stopCompose",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [],
+  "initializeCommand": [".devcontainer/docker-init"],
+  "postCreateCommand": "",
+  "postStartCommand": "",
+  "settings": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "extensions": [
+    "eamodio.gitlens",
+    "editorconfig.editorconfig",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-azuretools.vscode-docker"
+  ]
+}
