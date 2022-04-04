@@ -21,11 +21,11 @@ services:
       - ..:/workspace
       - ~/.ssh:/root/.ssh
       - /var/run/docker.sock:/var/run/docker.sock
-      - vscode-extensions:/root/.vscode-server/extensions
+      # - vscode-extensions:/root/.vscode-server/extensions
 
-volumes:
-  vscode-extensions:
-    external: true
+# volumes:
+#   vscode-extensions:
+#     external: true
 
 networks:
   default:
