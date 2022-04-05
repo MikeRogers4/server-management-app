@@ -1,5 +1,5 @@
-import Layout from '../components/layout'
 import * as osu from 'node-os-utils'
+import * as _ from 'lodash'
 
 function Header({ title }) {
   return <h1>{title ? title : 'Default title'}</h1>
@@ -7,14 +7,20 @@ function Header({ title }) {
 
 export default function HomePage({ data }) {
   return (
-    <Layout>
-      <Header title={data} />
-    </Layout>
+    <>
+      <Header title={'Server Details'} />
+      <p>{JSON.stringify(data)}</p>
+    </>
   )
 }
 
 export async function getServerSideProps() {
-  const data = osu.cpu.count()
+  const cpuCount = osu.cpu.count()
+  const driveInfo = await osu.drive.info()
+  const memInfo = await osu.mem.info()
+  const data = _.merge(driveInfo, memInfo, {
+    cpuCount
+  })
 
   return {
     props: {
