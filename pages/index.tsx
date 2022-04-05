@@ -1,27 +1,24 @@
-import { useState } from 'react'
+import Layout from '../components/layout'
+import * as osu from 'node-os-utils'
+
 function Header({ title }) {
   return <h1>{title ? title : 'Default title'}</h1>
 }
 
-export default function HomePage() {
-  const names = ['Ada Lovelace', 'Grace Hopper', 'Margaret Hamilton']
-
-  const [likes, setLikes] = useState(0)
-
-  function handleClick() {
-    setLikes(likes + 1)
-  }
-
+export default function HomePage({ data }) {
   return (
-    <div>
-      <Header title="Develop. Preview. Ship. 🚀" />
-      <ul>
-        {names.map(name => (
-          <li key={name}>{name}</li>
-        ))}
-      </ul>
-
-      <button onClick={handleClick}>Like ({likes})</button>
-    </div>
+    <Layout>
+      <Header title={data} />
+    </Layout>
   )
+}
+
+export async function getServerSideProps() {
+  const data = osu.cpu.count()
+
+  return {
+    props: {
+      data
+    }
+  }
 }
