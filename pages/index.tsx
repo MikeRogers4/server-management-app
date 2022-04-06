@@ -1,15 +1,10 @@
 import * as osu from 'node-os-utils'
 import * as _ from 'lodash'
-import Title from '../components/title'
-import PieChart from '../components/pieChart'
+import MultiPiePage from '../components/multiPiePage'
 
 export default function ServerDetails({ data }) {
   return (
-    <>
-      <Title>Server Details</Title>
-      <PieChart data={data.storageData} title={'Storage'} />
-      <PieChart data={data.memoryData} title={'Memory'} />
-    </>
+    <MultiPiePage data={data} title='Server Details' />
   )
 }
 
