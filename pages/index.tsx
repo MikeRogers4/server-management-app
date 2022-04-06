@@ -4,21 +4,11 @@ import Title from '../components/title'
 import PieChart from '../components/pieChart'
 
 export default function HomePage({ data }) {
-  const pieData = [{
-    id: 'free',
-    label: 'free',
-    value: Math.round((parseInt(data.freeGb, 10) / parseInt(data.totalGb, 10)) * 100)
-  }, {
-    id: 'used',
-    label: 'used',
-    value: Math.round((parseInt(data.usedGb, 10) / parseInt(data.totalGb, 10)) * 100)
-  }]
-
   return (
     <>
       <Title>Server Details</Title>
-      <p>{JSON.stringify(data)}</p>
-      <PieChart data={pieData} />
+      <PieChart data={data.storageData} title={'Storage'} />
+      <PieChart data={data.memoryData} title={'Memory'} />
     </>
   )
 }
@@ -30,10 +20,31 @@ export async function getServerSideProps() {
   const data = _.merge(driveInfo, memInfo, {
     cpuCount
   })
+  const storageData = [{
+    id: 'free',
+    label: 'free',
+    value: data.freePercentage
+  }, {
+    id: 'used',
+    label: 'used',
+    value: data.usedPercentage
+  }]
+  const memoryData = [{
+    id: 'free',
+    label: 'free',
+    value: data.freeMemPercentage
+  }, {
+    id: 'used',
+    label: 'used',
+    value: data.usedMemPercentage
+  }]
 
   return {
     props: {
-      data
+      data: {
+        storageData,
+        memoryData
+      }
     }
   }
 }
