@@ -1,10 +1,7 @@
 import * as osu from 'node-os-utils'
 import * as _ from 'lodash'
 import { ResponsivePie } from '@nivo/pie'
-
-function Header({ title }) {
-  return <h1>{title ? title : 'Default title'}</h1>
-}
+import Title from '../components/title'
 
 export default function HomePage({ data }) {
   const pieData = [{
@@ -21,14 +18,14 @@ export default function HomePage({ data }) {
 
   return (
     <>
-      <Header title={'Server Details'} />
+      <Title>Server Details</Title>
       <p>{JSON.stringify(data)}</p>
       <div style={{ height: 250 }}>
         <ResponsivePie
           data={pieData}
           margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
           legends={[{
-            anchor: 'top',
+            anchor: 'bottom',
             direction: 'row',
             justify: false,
             translateX: 0,
