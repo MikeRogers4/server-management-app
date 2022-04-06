@@ -5,7 +5,7 @@ import PieChart from './pieChart'
 export default function MultiPiePage({ title, data }) {
     return <>
         <Title>{title}</Title>
-        <PieChart data={data.storageData} title={'Storage'} />
-        <PieChart data={data.memoryData} title={'Memory'} />
+        <PieChart data={data.storageData} title={'Storage'} className={styles['first-pie']} />
+        <PieChart data={data.memoryData} title={'Memory'} className={styles['second-pie']} />
     </>
 }
