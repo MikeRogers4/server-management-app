@@ -3,16 +3,19 @@ import { ResponsivePie } from '@nivo/pie'
 import * as _ from 'lodash'
 
 export default function PieChart({ data }) {
+    const textColor = '#FFFFFF'
     const colors = ['#A3A1FB', '#58B5AB']
-    const dataWithColors = _.map(data, function (datum, index) {
-        datum.color = colors[index]
-        return datum
-    })
 
     return <div style={{ height: 250 }} className={styles['pieChart']}>
         <ResponsivePie
-            data={dataWithColors}
+            data={data}
             margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+            colors={colors}
+            enableArcLabels={false}
+            arcLinkLabel={(datum) => {
+                return `${datum.value}%`
+            }}
+            arcLinkLabelsTextColor={textColor}
             legends={[{
                 anchor: 'bottom',
                 direction: 'row',
@@ -22,19 +25,17 @@ export default function PieChart({ data }) {
                 itemsSpacing: 0,
                 itemWidth: 100,
                 itemHeight: 18,
-                itemTextColor: '#999',
+                itemTextColor: textColor,
                 itemDirection: 'left-to-right',
                 itemOpacity: 1,
                 symbolSize: 18,
                 symbolShape: 'circle',
-                effects: [
-                    {
-                        on: 'hover',
-                        style: {
-                            itemTextColor: '#000'
-                        }
+                effects: [{
+                    on: 'hover',
+                    style: {
+                        itemTextColor: '#000'
                     }
-                ]
+                }]
             }]}
         />
     </div>

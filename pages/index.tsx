@@ -7,11 +7,11 @@ export default function HomePage({ data }) {
   const pieData = [{
     id: 'free',
     label: 'free',
-    value: parseInt(data.freeGb, 10)
+    value: Math.round((parseInt(data.freeGb, 10) / parseInt(data.totalGb, 10)) * 100)
   }, {
     id: 'used',
     label: 'used',
-    value: parseInt(data.usedGb, 10)
+    value: Math.round((parseInt(data.usedGb, 10) / parseInt(data.totalGb, 10)) * 100)
   }]
 
   return (
