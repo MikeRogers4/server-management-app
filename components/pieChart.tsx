@@ -1,4 +1,4 @@
-import styles from './title.module.css'
+import styles from './title.module.scss'
 import { ResponsivePie } from '@nivo/pie'
 import * as _ from 'lodash'
 
