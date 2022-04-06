@@ -16,6 +16,9 @@ export default function ServerDetails({ data }) {
   }, {
     dataKey: 'memoryData',
     title: 'Memory'
+  }, {
+    dataKey: 'cpuData',
+    title: 'CPU'
   }]
 
   useEffect(() => {
@@ -27,34 +30,45 @@ export default function ServerDetails({ data }) {
 }
 
 export async function getServerSideProps() {
-  const cpuCount = osu.cpu.count()
-  const driveInfo = await osu.drive.info()
-  const memInfo = await osu.mem.info()
-  const data = _.merge(driveInfo, memInfo, {
-    cpuCount
-  })
-  const storageData = [{
+  const cpuFree = Math.round(await osu.cpu.free() * 100)
+  const driveFree = Math.round(await osu.drive.free().then(function (info) {
+    return info.freePercentage
+  }) * 100)
+  const memFree = Math.round(await osu.mem.free().then(function (info) {
+    return (info.freeMemMb / info.totalMemMb) * 100
+  }) * 100)
+  const cpuData = [{
     id: 'free',
     label: 'free',
-    value: data.freePercentage
+    value: cpuFree / 100
   }, {
     id: 'used',
     label: 'used',
-    value: data.usedPercentage
+    value: (10000 - cpuFree) / 100
+  }]
+  const storageData = [{
+    id: 'free',
+    label: 'free',
+    value: driveFree / 100
+  }, {
+    id: 'used',
+    label: 'used',
+    value: (10000 - driveFree) / 100
   }]
   const memoryData = [{
     id: 'free',
     label: 'free',
-    value: data.freeMemPercentage
+    value: memFree / 100
   }, {
     id: 'used',
     label: 'used',
-    value: data.usedMemPercentage
+    value: (10000 - memFree) / 100
   }]
 
   return {
     props: {
       data: {
+        cpuData,
         storageData,
         memoryData
       }

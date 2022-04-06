@@ -7,7 +7,9 @@ export default function MultiPiePage({ title, data, pies }) {
     const pieComponents = _.map(pies, function (pie, index) {
         const key = `pie-${index}`
 
-        return <PieChart data={data[pie.dataKey]} title={pie.title} className={styles[key]} key={key} />
+        return <PieChart data={data[pie.dataKey]} title={pie.title} key={key} style={{
+            position: 'absolute', top: '6px', left: `${300 * index}px`
+        }} />
     })
 
     return <>
