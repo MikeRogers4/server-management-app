@@ -3,8 +3,16 @@ import * as _ from 'lodash'
 import MultiPiePage from '../components/multiPiePage'
 
 export default function ServerDetails({ data }) {
+  const pies = [{
+    dataKey: 'storageData',
+    title: 'Storage'
+  }, {
+    dataKey: 'memoryData',
+    title: 'Memory'
+  }]
+
   return (
-    <MultiPiePage data={data} title='Server Details' />
+    <MultiPiePage data={data} title='Server Details' pies={pies} />
   )
 }
 
