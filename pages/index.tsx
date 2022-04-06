@@ -3,7 +3,7 @@ import * as _ from 'lodash'
 import Title from '../components/title'
 import PieChart from '../components/pieChart'
 
-export default function HomePage({ data }) {
+export default function ServerDetails({ data }) {
   return (
     <>
       <Title>Server Details</Title>
