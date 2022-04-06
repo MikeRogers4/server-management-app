@@ -1,8 +1,15 @@
 import * as osu from 'node-os-utils'
 import * as _ from 'lodash'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import MultiPiePage from '../components/multiPiePage'
 
 export default function ServerDetails({ data }) {
+  const router = useRouter()
+  const refreshData = () => {
+    router.replace(router.asPath);
+    setTimeout(refreshData, 5000);
+  }
   const pies = [{
     dataKey: 'storageData',
     title: 'Storage'
@@ -11,6 +18,9 @@ export default function ServerDetails({ data }) {
     title: 'Memory'
   }]
 
+  useEffect(() => {
+    refreshData()
+  }, [])
   return (
     <MultiPiePage data={data} title='Server Details' pies={pies} />
   )
