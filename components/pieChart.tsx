@@ -1,10 +1,17 @@
 import styles from './title.module.css'
 import { ResponsivePie } from '@nivo/pie'
+import * as _ from 'lodash'
 
 export default function PieChart({ data }) {
+    const colors = ['#A3A1FB', '#58B5AB']
+    const dataWithColors = _.map(data, function (datum, index) {
+        datum.color = colors[index]
+        return datum
+    })
+
     return <div style={{ height: 250 }} className={styles['pieChart']}>
         <ResponsivePie
-            data={data}
+            data={dataWithColors}
             margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
             legends={[{
                 anchor: 'bottom',

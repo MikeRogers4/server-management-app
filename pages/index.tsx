@@ -7,13 +7,11 @@ export default function HomePage({ data }) {
   const pieData = [{
     id: 'free',
     label: 'free',
-    value: parseInt(data.freeGb, 10),
-    color: '#A3A1FB'
+    value: parseInt(data.freeGb, 10)
   }, {
     id: 'used',
     label: 'used',
-    value: parseInt(data.usedGb, 10),
-    color: '#58B5AB'
+    value: parseInt(data.usedGb, 10)
   }]
 
   return (
