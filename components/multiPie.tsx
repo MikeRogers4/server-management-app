@@ -1,9 +1,8 @@
-import styles from './multiPiePage.module.scss'
-import Title from './title'
+import styles from './multiPie.module.scss'
 import PieChart from './pieChart'
 import * as _ from 'lodash'
 
-export default function MultiPiePage({ title, data, pies }) {
+export default function MultiPie({ data, pies }) {
     const pieComponents = _.map(pies, function (pie, index) {
         const key = `pie-${index}`
 
@@ -13,7 +12,6 @@ export default function MultiPiePage({ title, data, pies }) {
     })
 
     return <>
-        <Title>{title}</Title>
         {pieComponents}
     </>
 }

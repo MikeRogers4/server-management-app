@@ -2,7 +2,8 @@ import * as osu from 'node-os-utils'
 import * as _ from 'lodash'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import MultiPiePage from '../components/multiPiePage'
+import Title from '../components/title'
+import MultiPie from '../components/multiPie'
 
 export default function ServerDetails({ data }) {
   const router = useRouter()
@@ -11,10 +12,10 @@ export default function ServerDetails({ data }) {
     setTimeout(refreshData, 5000);
   }
   const pies = [{
-    dataKey: 'storageData',
+    dataKey: 'driveData',
     title: 'Storage'
   }, {
-    dataKey: 'memoryData',
+    dataKey: 'memData',
     title: 'Memory'
   }, {
     dataKey: 'cpuData',
@@ -25,11 +26,18 @@ export default function ServerDetails({ data }) {
     refreshData()
   }, [])
   return (
-    <MultiPiePage data={data} title='Server Details' pies={pies} />
+    <>
+      <Title>Server Details</Title>
+      <MultiPie data={data} pies={pies} />
+      <div>{data.dockerContainerNames}</div>
+    </>
   )
 }
 
 export async function getServerSideProps() {
+  const util = require('util');
+  const exec = util.promisify(require('child_process').exec)
+  const dockerContainerNames = (await exec('docker ps --format "{{.Names}}"')).stdout
   const cpuFree = Math.round(await osu.cpu.free() * 100)
   const driveFree = Math.round(await osu.drive.free().then(function (info) {
     return info.freePercentage
@@ -37,41 +45,30 @@ export async function getServerSideProps() {
   const memFree = Math.round(await osu.mem.free().then(function (info) {
     return (info.freeMemMb / info.totalMemMb) * 100
   }) * 100)
-  const cpuData = [{
-    id: 'free',
-    label: 'free',
-    value: cpuFree / 100
-  }, {
-    id: 'used',
-    label: 'used',
-    value: (10000 - cpuFree) / 100
-  }]
-  const storageData = [{
-    id: 'free',
-    label: 'free',
-    value: driveFree / 100
-  }, {
-    id: 'used',
-    label: 'used',
-    value: (10000 - driveFree) / 100
-  }]
-  const memoryData = [{
-    id: 'free',
-    label: 'free',
-    value: memFree / 100
-  }, {
-    id: 'used',
-    label: 'used',
-    value: (10000 - memFree) / 100
-  }]
+  const cpuData = getUsageDataForPie(cpuFree)
+  const driveData = getUsageDataForPie(driveFree)
+  const memData = getUsageDataForPie(memFree)
 
   return {
     props: {
       data: {
         cpuData,
-        storageData,
-        memoryData
+        driveData,
+        memData,
+        dockerContainerNames
       }
     }
   }
+}
+
+function getUsageDataForPie(freePercentage) {
+  return [{
+    id: 'free',
+    label: 'free',
+    value: freePercentage / 100
+  }, {
+    id: 'used',
+    label: 'used',
+    value: (10000 - freePercentage) / 100
+  }]
 }
