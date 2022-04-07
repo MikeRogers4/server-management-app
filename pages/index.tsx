@@ -29,7 +29,7 @@ export default function ServerDetails({ data }) {
     <>
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
-      <div>{data.dockerContainerNames}</div>
+      {/* <div>{data.dockerContainerNames}</div> */}
     </>
   )
 }

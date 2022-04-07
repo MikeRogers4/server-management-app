@@ -1,0 +1,9 @@
+.gridContainer{
+  padding:               3.75%;
+  display:               grid;
+  grid-template-columns: 30% 30% 30%;
+  grid-column-gap:       5%;
+  grid-row-gap:          50px;
+  align-items:           center;
+  align-self:            center;
+}

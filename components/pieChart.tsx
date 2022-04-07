@@ -2,11 +2,11 @@ import styles from './title.module.scss'
 import { ResponsivePie } from '@nivo/pie'
 import * as _ from 'lodash'
 
-export default function PieChart({ data, title, style }) {
+export default function PieChart({ data, title }) {
     const textColor = '#FFFFFF'
     const colors = ['#A3A1FB', '#58B5AB']
 
-    return <div style={_.merge(style, { height: 250, width: 300 })}>
+    return <div style={{ height: 250, width: 300 }}>
         <div className={styles.title}>{title}</div>
         <ResponsivePie
             data={data}
