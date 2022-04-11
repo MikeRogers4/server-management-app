@@ -6,7 +6,7 @@ const SmartGrid = dynamic(() => import('smart-webcomponents-react/grid'), {
     loading: () => <p>Loading...</p>
 })
 
-export default function Grid({ dataSource }) {
+export default function Grid({ dataSource, title }) {
     const columns = [{
         label: 'Name',
         dataField: 'name'
@@ -21,6 +21,9 @@ export default function Grid({ dataSource }) {
         dataFields: [{ name: 'id', dataType: 'number' }, { name: 'name', dataType: 'string' }]
     }
 
-    return <SmartGrid className={styles.smartGrid} id='grid' columns={columns} selection={selection} dataSource={dataSource}
-        dataSourceSettings={dataSourceSettings} />
+    return <>
+        <div className={styles.title}>{title}</div>
+        <SmartGrid className={styles.smartGrid} id='grid' columns={columns} selection={selection} dataSource={dataSource}
+            dataSourceSettings={dataSourceSettings} />
+    </>
 }
