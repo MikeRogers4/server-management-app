@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Title from '../components/title'
 import MultiPie from '../components/multiPie'
+import Grid from '../components/grid'
 
 export default function ServerDetails({ data }) {
   const router = useRouter()
@@ -29,7 +30,7 @@ export default function ServerDetails({ data }) {
     <>
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
-      {/* <div>{data.dockerContainerNames}</div> */}
+      <Grid dataSource={data.dockerContainerNames} />
     </>
   )
 }
@@ -37,7 +38,7 @@ export default function ServerDetails({ data }) {
 export async function getServerSideProps() {
   const util = require('util');
   const exec = util.promisify(require('child_process').exec)
-  const dockerContainerNames = (await exec('docker ps --format "{{.Names}}"')).stdout
+  const dockerContainerNames = (await exec('docker ps --format "{{.Names}}"')).stdout.split('\n')
   const cpuFree = Math.round(await osu.cpu.free() * 100)
   const driveFree = Math.round(await osu.drive.free().then(function (info) {
     return info.freePercentage
@@ -48,7 +49,7 @@ export async function getServerSideProps() {
   const cpuData = getUsageDataForPie(cpuFree)
   const driveData = getUsageDataForPie(driveFree)
   const memData = getUsageDataForPie(memFree)
-
+  console.log(dockerContainerNames)
   return {
     props: {
       data: {
