@@ -6,7 +6,7 @@ export default function PieChart({ data, title, className }) {
     const textColor = '#FFFFFF'
     const colors = ['#A3A1FB', '#58B5AB']
 
-    return <div style={{ height: 250, width: 300 }} className={className}>
+    return <div style={{ height: 250 }} className={className}>
         <div className={styles.title}>{title}</div>
         <ResponsivePie
             data={data}
