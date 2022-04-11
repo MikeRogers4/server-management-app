@@ -36,10 +36,13 @@ export default function ServerDetails({ data }) {
 }
 
 export async function getServerSideProps() {
-  const util = require('util');
+  const util = require('util')
   const exec = util.promisify(require('child_process').exec)
-  const dockerContainerNames = _.map((await exec('docker ps --format "{{.Names}}"')).stdout.split('\n '), function (name) {
-    return name.replace('\n', '')
+  const dockerContainerNames = _.map((await exec('docker ps --format "{{.Names}}"')).stdout.split('\n '), function (name, index) {
+    return {
+      id: index,
+      name: name.replace('\n', '')
+    }
   })
   const cpuFree = Math.round(await osu.cpu.free() * 100)
   const driveFree = Math.round(await osu.drive.free().then(function (info) {

@@ -18,7 +18,7 @@ export default function Grid({ dataSource }) {
         }
     }
     const dataSourceSettings = {
-        dataFields: [{ name: 'name', dataType: 'string' }]
+        dataFields: [{ name: 'id', dataType: 'number' }, { name: 'name', dataType: 'string' }]
     }
 
     return <SmartGrid className={styles.smartGrid} id='grid' columns={columns} selection={selection} dataSource={dataSource}
