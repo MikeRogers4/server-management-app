@@ -30,7 +30,10 @@ export default function ServerDetails({ data }) {
     <>
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
-      <Grid dataSource={data.dockerContainerNames} title={'Docker Containers'} />
+      <Grid dataSource={data.dockerContainerNames} title={'Docker Containers'} id={'docker-containers-grid'}
+        buttons={
+          <button onClick={() => shutDownSelected('docker-containers-grid')}>Shut Down Selected</button>
+        } />
     </>
   )
 }
@@ -80,4 +83,8 @@ function getUsageDataForPie(freePercentage) {
     label: 'used',
     value: (10000 - freePercentage) / 100
   }]
+}
+
+function shutDownSelected(id) {
+  console.log(id)
 }
