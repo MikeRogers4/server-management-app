@@ -31,7 +31,11 @@ export default function ServerDetails({ data }) {
     <>
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
-      <Grid data={data.dockerContainers} title={'Docker Containers'} id={'docker-containers-grid'} />
+      <Grid data={data.dockerContainers} title={'Docker Containers'} onClick={function (e) {
+        const clickedItem = e.target.outerText
+        console.log(e)
+        fetch(`/api/stopContainer/${clickedItem}`)
+      }} />
     </>
   )
 }
@@ -47,7 +51,7 @@ export async function getServerSideProps() {
       return
     }
     return {
-      name: container[0],
+      name: container[0].trim(),
       running: container[1] === 'running'
     }
   }))
