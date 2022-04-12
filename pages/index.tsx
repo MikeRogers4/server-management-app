@@ -1,12 +1,24 @@
 import * as osu from 'node-os-utils'
 import * as _ from 'lodash'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Title from '../components/title'
 import MultiPie from '../components/multiPie'
 import ToggleGrid from '../components/toggleGrid'
+import { useState } from 'react'
 
 export default function ServerDetails({ data }) {
+  const [togglingRecords, setTogglingRecords] = useState([])
+
+  if (!_.isEmpty(togglingRecords)) {
+    _.each(togglingRecords, function (togglingRecord) {
+      const dockerContainer = _.find(data.dockerContainers, (dockerContainer) => dockerContainer.name === togglingRecord)
+
+      if (dockerContainer) {
+        dockerContainer.toggling = true
+      }
+    })
+  }
   const router = useRouter()
   const refreshData = () => {
     router.replace(router.asPath);
@@ -25,6 +37,12 @@ export default function ServerDetails({ data }) {
     title: `CPU (${data.totals.cpu} CPUs)`,
     suffix: '%'
   }]
+  const stopStartDockerContainer = function (data) {
+    setTogglingRecords(togglingRecords.concat([data.name]))
+    fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${data.name}`).then(function () {
+      setTogglingRecords(_.pull(togglingRecords, data.name))
+    })
+  }
 
   useEffect(() => {
     refreshData()
@@ -91,7 +109,8 @@ async function getDockerContainerData() {
     }
     return {
       name: container[0].trim(),
-      toggled: container[1] === 'running'
+      toggled: container[1] === 'running',
+      toggling: false
     }
   })), ['toggled', 'name'], ['desc', 'asc'])
 }
@@ -111,8 +130,4 @@ function getUsageDataForPie(info) {
     percentage: usedPercentage,
     value: info.total ? ((info.total * 10) - (info.free * 10)) / 10 : usedPercentage
   }]
-}
-
-function stopStartDockerContainer(data) {
-  fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${data.name}`)
 }
