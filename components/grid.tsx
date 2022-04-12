@@ -7,7 +7,7 @@ export default function Grid({ data, title, onClick }) {
         {data.map((datum, index) => (
             <div key={`grid-${index}`} className={styles.item} onClick={onClick} data-running={datum.running}>
                 <div>{datum.name}</div>
-                {datum.running ? <FaCheck key={`icon-${index}`} /> : <FaTimes key={`icon-${index}`} />}
+                {datum.running ? <FaCheck key={`icon-${index}`} className={styles.checkIcon} /> : <FaTimes key={`icon-${index}`} className={styles.timesIcon} />}
             </div>
         ))}
     </>
