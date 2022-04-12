@@ -5,20 +5,8 @@ import { useRouter } from 'next/router'
 import Title from '../components/title'
 import MultiPie from '../components/multiPie'
 import ToggleGrid from '../components/toggleGrid'
-import { useState } from 'react'
 
 export default function ServerDetails({ data }) {
-  const [togglingRecords, setTogglingRecords] = useState([])
-
-  if (!_.isEmpty(togglingRecords)) {
-    _.each(togglingRecords, function (togglingRecord) {
-      const dockerContainer = _.find(data.dockerContainers, (dockerContainer) => dockerContainer.name === togglingRecord)
-
-      if (dockerContainer) {
-        dockerContainer.toggling = true
-      }
-    })
-  }
   const router = useRouter()
   const refreshData = () => {
     router.replace(router.asPath);
@@ -38,10 +26,7 @@ export default function ServerDetails({ data }) {
     suffix: '%'
   }]
   const stopStartDockerContainer = function (data) {
-    setTogglingRecords(togglingRecords.concat([data.name]))
-    fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${data.name}`).then(function () {
-      setTogglingRecords(_.pull(togglingRecords, data.name))
-    })
+    return fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${data.name}`)
   }
 
   useEffect(() => {
