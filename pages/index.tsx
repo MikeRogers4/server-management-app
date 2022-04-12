@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Title from '../components/title'
 import MultiPie from '../components/multiPie'
-import Grid from '../components/grid'
+import ToggleGrid from '../components/toggleGrid'
 
 export default function ServerDetails({ data }) {
   const router = useRouter()
@@ -30,7 +30,7 @@ export default function ServerDetails({ data }) {
     <>
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
-      <Grid data={data.dockerContainers} title={'Docker Containers'} onClick={stopStartDockerContainer} />
+      <ToggleGrid data={data.dockerContainers} title={'Docker Containers'} onClick={stopStartDockerContainer} />
     </>
   )
 }
@@ -74,9 +74,9 @@ async function getDockerContainerData() {
     }
     return {
       name: container[0].trim(),
-      running: container[1] === 'running'
+      toggled: container[1] === 'running'
     }
-  })), ['running', 'name'], ['desc', 'asc'])
+  })), ['toggled', 'name'], ['desc', 'asc'])
 }
 
 function getUsageDataForPie(freePercentage) {
@@ -91,6 +91,6 @@ function getUsageDataForPie(freePercentage) {
   }]
 }
 
-function stopStartDockerContainer(name, running) {
-  fetch(`/api/${running ? 'stopContainer' : 'startContainer'}/${name}`)
+function stopStartDockerContainer(data) {
+  fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${data.name}`)
 }
