@@ -18,7 +18,7 @@ export default function PieChart({ data, title, className }) {
                 return `${datum.value}%`
             }}
             arcLinkLabelsTextColor={textColor}
-            activeOuterRadiusOffset={8}
+            activeOuterRadiusOffset={4}
             theme={{
                 tooltip: {
                     container: {
