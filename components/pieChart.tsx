@@ -18,6 +18,16 @@ export default function PieChart({ data, title, className }) {
                 return `${datum.value}%`
             }}
             arcLinkLabelsTextColor={textColor}
+            activeOuterRadiusOffset={8}
+            theme={{
+                tooltip: {
+                    container: {
+                        background: '#4f5c72',
+                        color: textColor,
+                        fontSize: 14
+                    }
+                }
+            }}
             legends={[{
                 anchor: 'bottom',
                 direction: 'row',
