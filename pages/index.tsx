@@ -1,12 +1,13 @@
 import * as osu from 'node-os-utils'
 import * as _ from 'lodash'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Title from '../components/title'
 import MultiPie from '../components/multiPie'
 import Grid from '../components/grid'
 
 export default function ServerDetails({ data }) {
+  const [selectedRows, setSelectedRows] = useState([])
   const router = useRouter()
   const refreshData = () => {
     router.replace(router.asPath);
@@ -30,10 +31,7 @@ export default function ServerDetails({ data }) {
     <>
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
-      <Grid dataSource={data.dockerContainerNames} title={'Docker Containers'} id={'docker-containers-grid'}
-        buttons={
-          <button onClick={() => shutDownSelected('docker-containers-grid')}>Shut Down Selected</button>
-        } />
+      <Grid data={data.dockerContainerNames} title={'Docker Containers'} id={'docker-containers-grid'} />
     </>
   )
 }
@@ -45,10 +43,7 @@ export async function getServerSideProps() {
     if (_.isEmpty(name)) {
       return
     }
-    return {
-      id: index,
-      name: name.replace('\n', '')
-    }
+    return name.replace('\n', '')
   }))
   const cpuFree = Math.round(await osu.cpu.free() * 100)
   const driveFree = Math.round(await osu.drive.free().then(function (info) {
@@ -85,6 +80,6 @@ function getUsageDataForPie(freePercentage) {
   }]
 }
 
-function shutDownSelected(id) {
-  console.log(id)
+function shutDownSelected(selectedRows) {
+  console.log(selectedRows)
 }
