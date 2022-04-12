@@ -32,9 +32,11 @@ export default function ServerDetails({ data }) {
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
       <Grid data={data.dockerContainers} title={'Docker Containers'} onClick={function (e) {
-        const clickedItem = e.target.outerText
-        console.log(e)
-        fetch(`/api/stopContainer/${clickedItem}`)
+        const target = e.target
+        const containerName = target.outerText
+        const running = target.dataset.running === "true"
+
+        fetch(`/api/${running ? 'stopContainer' : 'startContainer'}/${containerName}`)
       }} />
     </>
   )
@@ -43,7 +45,8 @@ export default function ServerDetails({ data }) {
 export async function getServerSideProps() {
   const util = require('util')
   const exec = util.promisify(require('child_process').exec)
-  const dockerContainers = _.compact(_.map((await exec('docker ps -a --format "{{.Names}}, {{.State}}"')).stdout.split('\n'), function (container, index) {
+  const dockerContainerInfo = (await exec('docker ps -a --format "{{.Names}}, {{.State}}"')).stdout
+  const dockerContainers = _.orderBy(_.compact(_.map(dockerContainerInfo.split('\n'), function (container, index) {
     container = container.replace('\n', '')
     container = container.split(', ')
 
@@ -54,7 +57,7 @@ export async function getServerSideProps() {
       name: container[0].trim(),
       running: container[1] === 'running'
     }
-  }))
+  })), ['running', 'name'], ['desc', 'asc'])
   const cpuFree = Math.round(await osu.cpu.free() * 100)
   const driveFree = Math.round(await osu.drive.free().then(function (info) {
     return info.freePercentage
