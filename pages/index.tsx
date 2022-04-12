@@ -14,13 +14,13 @@ export default function ServerDetails({ data }) {
   }
   const pies = [{
     dataKey: 'driveData',
-    title: 'Storage'
+    title: `Storage (${data.totals.drive}GB)`
   }, {
     dataKey: 'memData',
-    title: 'Memory'
+    title: `Memory (${data.totals.mem}GB)`
   }, {
     dataKey: 'cpuData',
-    title: 'CPU'
+    title: `CPU (${data.totals.cpu} CPUs)`
   }]
 
   useEffect(() => {
@@ -38,12 +38,10 @@ export default function ServerDetails({ data }) {
 export async function getServerSideProps() {
   const dockerContainers = await getDockerContainerData()
   const cpuFree = Math.round(await osu.cpu.free() * 100)
-  const driveFree = Math.round(await osu.drive.free().then(function (info) {
-    return info.freePercentage
-  }) * 100)
-  const memFree = Math.round(await osu.mem.free().then(function (info) {
-    return (info.freeMemMb / info.totalMemMb) * 100
-  }) * 100)
+  const driveInfo = await osu.drive.free()
+  const driveFree = Math.round(driveInfo.freePercentage * 100)
+  const memInfo = await osu.mem.free()
+  const memFree = Math.round((memInfo.freeMemMb / memInfo.totalMemMb) * 10000)
   const cpuData = getUsageDataForPie(cpuFree)
   const driveData = getUsageDataForPie(driveFree)
   const memData = getUsageDataForPie(memFree)
@@ -54,7 +52,12 @@ export async function getServerSideProps() {
         cpuData,
         driveData,
         memData,
-        dockerContainers
+        dockerContainers,
+        totals: {
+          cpu: osu.cpu.count(),
+          drive: driveInfo.totalGb,
+          mem: Math.round(memInfo.totalMemMb / 100) / 10
+        }
       }
     }
   }
