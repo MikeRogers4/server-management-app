@@ -14,13 +14,16 @@ export default function ServerDetails({ data }) {
   }
   const pies = [{
     dataKey: 'driveData',
-    title: `Storage (${data.totals.drive}GB)`
+    title: `Storage (${data.totals.drive}GB)`,
+    suffix: 'GB'
   }, {
     dataKey: 'memData',
-    title: `Memory (${data.totals.mem}GB)`
+    title: `Memory (${data.totals.mem}GB)`,
+    suffix: 'GB'
   }, {
     dataKey: 'cpuData',
-    title: `CPU (${data.totals.cpu} CPUs)`
+    title: `CPU (${data.totals.cpu} CPUs)`,
+    suffix: '%'
   }]
 
   useEffect(() => {
@@ -37,14 +40,25 @@ export default function ServerDetails({ data }) {
 
 export async function getServerSideProps() {
   const dockerContainers = await getDockerContainerData()
-  const cpuFree = Math.round(await osu.cpu.free() * 100)
+  const cpuFreePercentage = Math.round(await osu.cpu.free() * 100)
   const driveInfo = await osu.drive.free()
-  const driveFree = Math.round(driveInfo.freePercentage * 100)
+  const driveFreePercentage = Math.round(driveInfo.freePercentage * 100)
   const memInfo = await osu.mem.free()
-  const memFree = Math.round((memInfo.freeMemMb / memInfo.totalMemMb) * 10000)
-  const cpuData = getUsageDataForPie(cpuFree)
-  const driveData = getUsageDataForPie(driveFree)
-  const memData = getUsageDataForPie(memFree)
+  const memFreePercentage = Math.round((memInfo.freeMemMb / memInfo.totalMemMb) * 10000)
+  const memTotal = Math.round(memInfo.totalMemMb / 100) / 10
+  const cpuData = getUsageDataForPie({
+    percentage: cpuFreePercentage
+  })
+  const driveData = getUsageDataForPie({
+    percentage: driveFreePercentage,
+    free: driveInfo.freeGb,
+    total: driveInfo.totalGb
+  })
+  const memData = getUsageDataForPie({
+    percentage: memFreePercentage,
+    free: Math.round(memInfo.freeMemMb / 100) / 10,
+    total: memTotal
+  })
 
   return {
     props: {
@@ -56,7 +70,7 @@ export async function getServerSideProps() {
         totals: {
           cpu: osu.cpu.count(),
           drive: driveInfo.totalGb,
-          mem: Math.round(memInfo.totalMemMb / 100) / 10
+          mem: memTotal
         }
       }
     }
@@ -82,15 +96,20 @@ async function getDockerContainerData() {
   })), ['toggled', 'name'], ['desc', 'asc'])
 }
 
-function getUsageDataForPie(freePercentage) {
+function getUsageDataForPie(info) {
+  const freePercentage = info.percentage / 100
+  const usedPercentage = (10000 - info.percentage) / 100
+
   return [{
     id: 'free',
     label: 'free',
-    value: freePercentage / 100
+    percentage: freePercentage,
+    value: info.free || freePercentage
   }, {
     id: 'used',
     label: 'used',
-    value: (10000 - freePercentage) / 100
+    percentage: usedPercentage,
+    value: info.total ? ((info.total * 10) - (info.free * 10)) / 10 : usedPercentage
   }]
 }
 

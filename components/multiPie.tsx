@@ -6,7 +6,7 @@ export default function MultiPie({ data, pies }) {
     const pieComponents = _.map(pies, function (pie, index) {
         const key = `pie-${index}`
 
-        return <PieChart data={data[pie.dataKey]} title={pie.title} key={key} className={styles.gridItem} />
+        return <PieChart data={data[pie.dataKey]} title={pie.title} key={key} className={styles.gridItem} valueSuffix={pie.suffix} />
     })
 
     return <div className={styles.gridContainer}>
