@@ -31,7 +31,7 @@ export default function ServerDetails({ data }) {
     <>
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
-      <Grid data={data.dockerContainerNames} title={'Docker Containers'} id={'docker-containers-grid'} />
+      <Grid data={data.dockerContainers} title={'Docker Containers'} id={'docker-containers-grid'} />
     </>
   )
 }
@@ -39,11 +39,17 @@ export default function ServerDetails({ data }) {
 export async function getServerSideProps() {
   const util = require('util')
   const exec = util.promisify(require('child_process').exec)
-  const dockerContainerNames = _.compact(_.map((await exec('docker ps --format "{{.Names}}"')).stdout.split('\n'), function (name, index) {
-    if (_.isEmpty(name)) {
+  const dockerContainers = _.compact(_.map((await exec('docker ps -a --format "{{.Names}}, {{.State}}"')).stdout.split('\n'), function (container, index) {
+    container = container.replace('\n', '')
+    container = container.split(', ')
+
+    if (_.isEmpty(container[0])) {
       return
     }
-    return name.replace('\n', '')
+    return {
+      name: container[0],
+      running: container[1] === 'running'
+    }
   }))
   const cpuFree = Math.round(await osu.cpu.free() * 100)
   const driveFree = Math.round(await osu.drive.free().then(function (info) {
@@ -62,7 +68,7 @@ export async function getServerSideProps() {
         cpuData,
         driveData,
         memData,
-        dockerContainerNames
+        dockerContainers
       }
     }
   }
