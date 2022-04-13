@@ -104,9 +104,13 @@ async function getDockerNetworkData() {
   })
 
   for (const dockerNetwork of dockerNetworks) {
-    dockerNetwork.tooltip = (await exec(`docker network inspect ${dockerNetwork.name} | grep Name | tail -n +2 | cut -d':' -f2 | tr -d ',"'`)).stdout
+    dockerNetwork.children = (await exec(`docker network inspect ${dockerNetwork.name} | grep Name | tail -n +2 | cut -d':' -f2 | tr -d ',"'`)).stdout
+    dockerNetwork.children = dockerNetwork.children.replace('\n', `
+    `)
   }
-  return dockerNetworks
+  return _.filter(dockerNetworks, function (dockerNetwork) {
+    return !_.isEmpty(dockerNetwork.children)
+  })
 }
 
 async function getDockerData(dockerCommand, isRunning) {

@@ -3,12 +3,3 @@ body {
   background-color: #4f5c72;
   color:            #FFFFFF;
 }
-[data-tooltip]:before {
-  position:           absolute;
-  content:            attr(data-tooltip);
-  opacity:            0;
-  background-color: #697995;
-}
-[data-tooltip]:hover:before {
-  opacity: 1;
-}
