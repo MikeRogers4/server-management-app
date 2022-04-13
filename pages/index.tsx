@@ -91,40 +91,32 @@ export async function getServerSideProps() {
 }
 
 async function getDockerContainerData() {
-  const util = require('util')
-  const exec = util.promisify(require('child_process').exec)
-  const dockerContainerInfo = (await exec('docker ps -a --format "{{.Names}}, {{.State}}"')).stdout
-
-  return _.orderBy(_.compact(_.map(dockerContainerInfo.split('\n'), function (container, index) {
-    container = container.replace('\n', '')
-    container = container.split(', ')
-
-    if (_.isEmpty(container[0])) {
-      return
-    }
-    return {
-      name: container[0].trim(),
-      toggled: container[1] === 'running',
-      toggling: false
-    }
-  })), ['toggled', 'name'], ['desc', 'asc'])
+  return getDockerData('docker ps -a --format "{{.Names}}, {{.State}}"', function (item) {
+    return item[1] === 'running'
+  })
 }
 
 async function getDockerNetworkData() {
+  return getDockerData('docker network ls --format "{{.Name}}"', function () {
+    return true
+  })
+}
+
+async function getDockerData(dockerCommand, isRunning) {
   const util = require('util')
   const exec = util.promisify(require('child_process').exec)
-  const dockerContainerInfo = (await exec('docker network ls --format "{{.Name}}"')).stdout
+  const dockerInfo = (await exec(dockerCommand)).stdout
 
-  return _.orderBy(_.compact(_.map(dockerContainerInfo.split('\n'), function (container, index) {
-    container = container.replace('\n', '')
-    container = container.split(', ')
+  return _.orderBy(_.compact(_.map(dockerInfo.split('\n'), function (item, index) {
+    item = item.replace('\n', '')
+    item = item.split(', ')
 
-    if (_.isEmpty(container[0])) {
+    if (_.isEmpty(item[0])) {
       return
     }
     return {
-      name: container[0].trim(),
-      toggled: true,
+      name: item[0].trim(),
+      toggled: isRunning(item),
       toggling: false
     }
   })), ['toggled', 'name'], ['desc', 'asc'])
