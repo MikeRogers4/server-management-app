@@ -21,7 +21,7 @@ export default function ToggleGrid({ data, title, onClick }) {
             }
         })
     }
-    return <>
+    return <div>
         <h1 className={styles.title}>{title}</h1>
         {data.map((datum, index) => (
             <div key={`grid-${index}`} className={styles.item} >
@@ -32,5 +32,5 @@ export default function ToggleGrid({ data, title, onClick }) {
                         : <FaTimes key={`icon-${index}`} className={styles.timesIcon} />}</div>)}
             </div>
         ))}
-    </>
+    </div>
 }

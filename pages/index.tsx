@@ -28,6 +28,9 @@ export default function ServerDetails({ data }) {
   const stopStartDockerContainer = function (data) {
     return fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${data.name}`)
   }
+  const stopStartDockerNetwork = function (data) {
+    return fetch(`/api/${data.toggled ? 'stopNetwork' : 'startNetwork'}/${data.name}`)
+  }
 
   useEffect(() => {
     refreshData()
@@ -36,13 +39,19 @@ export default function ServerDetails({ data }) {
     <>
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
-      <ToggleGrid data={data.dockerContainers} title={'Docker Containers'} onClick={stopStartDockerContainer} />
+      <div style={{
+        display: 'grid', padding: '20px 15% 40px 25%', gridTemplateColumns: '40% 40%', gridColumnGap: '5%', gridRowGap: '50px'
+      }}>
+        <ToggleGrid data={data.dockerContainers} title={'Docker Containers'} onClick={stopStartDockerContainer} />
+        <ToggleGrid data={data.dockerNetworks} title={'Docker Networks'} onClick={stopStartDockerNetwork} />
+      </div>
     </>
   )
 }
 
 export async function getServerSideProps() {
   const dockerContainers = await getDockerContainerData()
+  const dockerNetworks = await getDockerNetworkData()
   const cpuFreePercentage = Math.round(await osu.cpu.free() * 100)
   const driveInfo = await osu.drive.free()
   const driveFreePercentage = Math.round(driveInfo.freePercentage * 100)
@@ -70,6 +79,7 @@ export async function getServerSideProps() {
         driveData,
         memData,
         dockerContainers,
+        dockerNetworks,
         totals: {
           cpu: osu.cpu.count(),
           drive: driveInfo.totalGb,
@@ -95,6 +105,26 @@ async function getDockerContainerData() {
     return {
       name: container[0].trim(),
       toggled: container[1] === 'running',
+      toggling: false
+    }
+  })), ['toggled', 'name'], ['desc', 'asc'])
+}
+
+async function getDockerNetworkData() {
+  const util = require('util')
+  const exec = util.promisify(require('child_process').exec)
+  const dockerContainerInfo = (await exec('docker network ls --format "{{.Name}}"')).stdout
+
+  return _.orderBy(_.compact(_.map(dockerContainerInfo.split('\n'), function (container, index) {
+    container = container.replace('\n', '')
+    container = container.split(', ')
+
+    if (_.isEmpty(container[0])) {
+      return
+    }
+    return {
+      name: container[0].trim(),
+      toggled: true,
       toggling: false
     }
   })), ['toggled', 'name'], ['desc', 'asc'])
