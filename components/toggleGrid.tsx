@@ -25,7 +25,9 @@ export default function ToggleGrid({ data, title, onClick }) {
         <h1 className={styles.title}>{title}</h1>
         {data.map((datum, index) => (
             <div key={`grid-${index}`} className={styles.item} >
-                <div>{datum.name}</div>
+                <div data-tooltip={datum.tooltip}>
+                    <div>{datum.name}</div>
+                </div>
                 {datum.toggling ? <FaExclamationTriangle key={`icon-${index}`} className={styles.exclamationIcon} /> :
                     (<div onClick={() => toggleItem(datum)}>{datum.toggled ?
                         <FaCheck key={`icon-${index}`} className={styles.checkIcon} />

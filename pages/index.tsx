@@ -90,16 +90,23 @@ export async function getServerSideProps() {
   }
 }
 
-async function getDockerContainerData() {
+function getDockerContainerData() {
   return getDockerData('docker ps -a --format "{{.Names}}, {{.State}}"', function (item) {
     return item[1] === 'running'
   })
 }
 
 async function getDockerNetworkData() {
-  return getDockerData('docker network ls --format "{{.Name}}"', function () {
+  const util = require('util')
+  const exec = util.promisify(require('child_process').exec)
+  const dockerNetworks = await getDockerData('docker network ls --format "{{.Name}}"', function () {
     return true
   })
+
+  for (const dockerNetwork of dockerNetworks) {
+    dockerNetwork.tooltip = (await exec(`docker network inspect ${dockerNetwork.name} | grep Name | tail -n +2 | cut -d':' -f2 | tr -d ',"'`)).stdout
+  }
+  return dockerNetworks
 }
 
 async function getDockerData(dockerCommand, isRunning) {
