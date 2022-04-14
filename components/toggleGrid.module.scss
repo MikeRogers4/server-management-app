@@ -1,6 +1,10 @@
 .title {
   text-align: center;
 }
+.container {
+  height:     300px;
+  overflow-y: scroll;
+}
 .twoItems {
   margin-bottom: 10px;
   margin-left: 15%;
@@ -8,14 +12,6 @@
   grid-template-columns: 70% 1%;
   grid-column-gap: 10%;
   align-items: center;
-}
-.threeItems {
-  margin-bottom:         10px;
-  margin-left:           15%;
-  display:               grid;
-  grid-template-columns: 70% 20% 1%;
-  grid-column-gap:       10%;
-  align-items:           center;
 }
 .checkIcon {
   color: #62BDA4;
@@ -25,7 +21,7 @@
   color: #E86E6E;
   cursor:  pointer;
 }
-.exclamationIcon{
+.exclamationIcon {
   color: #F9B233;
   cursor:  pointer;
 }

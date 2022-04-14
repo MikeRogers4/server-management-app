@@ -10,7 +10,6 @@ export default function PieChart({ data, title, className, valueSuffix }) {
         <div className={styles.title}>{title}</div>
         <ResponsivePie
             data={data}
-            sortByValue={true}
             margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
             colors={colors}
             enableArcLabels={false}

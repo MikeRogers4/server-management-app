@@ -105,8 +105,7 @@ async function getDockerNetworkData() {
 
   for (const dockerNetwork of dockerNetworks) {
     dockerNetwork.children = (await exec(`docker network inspect ${dockerNetwork.name} | grep Name | tail -n +2 | cut -d':' -f2 | tr -d ',"'`)).stdout
-    dockerNetwork.children = dockerNetwork.children.replace('\n', `
-    `)
+    dockerNetwork.children = _.compact(dockerNetwork.children.split('\n'))
   }
   return _.filter(dockerNetworks, function (dockerNetwork) {
     return !_.isEmpty(dockerNetwork.children)
