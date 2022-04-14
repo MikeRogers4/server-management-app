@@ -28,8 +28,17 @@ export default function ServerDetails({ data }) {
   const stopStartDockerContainer = function (data) {
     return fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${data.name}`)
   }
-  const stopStartDockerNetwork = function (data) {
-    return fetch(`/api/${data.toggled ? 'stopNetwork' : 'startNetwork'}/${data.name}`)
+  const stopStartDockerNetwork = async function (data) {
+    for (const containerName of data.children) {
+      await fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${containerName}`)
+    }
+    return true
+  }
+  const stopStartDockerProfile = async function (data) {
+    for (const containerName of data.containers) {
+      await fetch(`/api/${data.toggled ? 'stopContainer' : 'startContainer'}/${containerName}`)
+    }
+    return true
   }
 
   useEffect(() => {
@@ -40,10 +49,11 @@ export default function ServerDetails({ data }) {
       <Title>Server Details</Title>
       <MultiPie data={data} pies={pies} />
       <div style={{
-        display: 'grid', padding: '20px 15% 40px 25%', gridTemplateColumns: '40% 40%', gridColumnGap: '5%', gridRowGap: '50px'
+        display: 'grid', padding: '20px 5% 40px', gridTemplateColumns: '30% 30% 30%', gridColumnGap: '5%', gridRowGap: '50px'
       }}>
         <ToggleGrid data={data.dockerContainers} title={'Docker Containers'} onClick={stopStartDockerContainer} />
         <ToggleGrid data={data.dockerNetworks} title={'Docker Networks'} onClick={stopStartDockerNetwork} />
+        <ToggleGrid data={data.definedProfiles} title={'Docker Profiles'} onClick={stopStartDockerProfile} />
       </div>
     </>
   )
@@ -52,6 +62,7 @@ export default function ServerDetails({ data }) {
 export async function getServerSideProps() {
   const dockerContainers = await getDockerContainerData()
   const dockerNetworks = await getDockerNetworkData()
+  const definedProfiles = getProfilesForServer('test-mike', dockerContainers)
   const cpuFreePercentage = Math.round(await osu.cpu.free() * 100)
   const driveInfo = await osu.drive.free()
   const driveFreePercentage = Math.round(driveInfo.freePercentage * 100)
@@ -80,6 +91,7 @@ export async function getServerSideProps() {
         memData,
         dockerContainers,
         dockerNetworks,
+        definedProfiles,
         totals: {
           cpu: osu.cpu.count(),
           drive: driveInfo.totalGb,
@@ -130,6 +142,30 @@ async function getDockerData(dockerCommand, isRunning) {
       toggling: false
     }
   })), ['toggled', 'name'], ['desc', 'asc'])
+}
+
+function getProfilesForServer(name, dockerContainers) {
+  return [{
+    name: `${name} Core`,
+    toggled: (_.find(dockerContainers, (container) => container.name === `${name}-postgres`) || {}).toggled || false,
+    toggling: false,
+    containers: [`${name}-elasticsearch`, `${name}-kue`, `${name}-pgbouncer`, `${name}-postgres`, `${name}-redis`]
+  }, {
+    name: `${name} Helpers`,
+    toggled: (_.find(dockerContainers, (container) => container.name === `${name}_apihelper_1`) || {}).toggled || false,
+    toggling: false,
+    containers: [`${name}_apihelper_1`, `${name}_printhelper_1`]
+  }, {
+    name: `${name} Prospect`,
+    toggled: (_.find(dockerContainers, (container) => container.name === `${name}_prospect_1`) || {}).toggled || false,
+    toggling: false,
+    containers: [`${name}_confirmation_1`, `${name}_prospect_1`, `${name}_tasks_1`]
+  }, {
+    name: `${name} Workers`,
+    toggled: (_.find(dockerContainers, (container) => container.name === `${name}_orderconfirmation_1`) || {}).toggled || false,
+    toggling: false,
+    containers: [`${name}_apicallback_1`, `${name}_orderconfirmation_1`, `${name}_orderpdfcreation_1`]
+  }]
 }
 
 function getUsageDataForPie(info) {
