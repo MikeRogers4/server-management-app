@@ -22,8 +22,8 @@ export default function ToggleGrid({ data, title, onClick }) {
         })
     }
     return <div>
+        <h1 className={styles.title}>{title}</h1>
         <div className={styles.container}>
-            <h1 className={styles.title}>{title}</h1>
             {data.map((datum, index) => (
                 <div key={`grid-${index}`} className={styles.twoItems} >
                     <div>
